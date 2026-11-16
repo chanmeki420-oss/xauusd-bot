@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XAUUSD Bot — Automated Gold Trading</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">XAUUSD <span>BOT</span></div>
+    <div class="price-box">
+      <div class="sym">XAU/USD · LIVE</div>
+      <div class="val" id="livePrice">—</div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>Gold trading bot, <span>on autopilot.</span></h1>
+    <p>Connect your MT5 account, start the bot from your phone, and it trades XAUUSD for you from our server — even when your phone is off. $20/month. No profit is guaranteed; trading can lose money.</p>
+  </div>
+
+  <div class="card">
+    <h2>Live gold chart <span class="muted small">· TradingView, updates in real time</span></h2>
+    <div id="tv-container" class="tv-container"></div>
+  </div>
+
+  <!-- Signed out -->
+  <div id="signedOut" class="card hidden">
+    <h2>Sign in to start</h2>
+    <p class="sub">Sign in with your Gmail account. Your MT5 password is encrypted on our server and never shown to anyone.</p>
+    <button class="google" id="googleBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""> Sign in with Gmail</button>
+    <p class="err hidden" id="loginErr"></p>
+  </div>
+
+  <!-- Signed in -->
+  <div id="signedIn" class="hidden">
+    <div class="card">
+      <div class="row" style="display:flex;justify-content:space-between;align-items:center;">
+        <div><strong id="userName"></strong><div class="muted small" id="userEmail"></div></div>
+        <button class="secondary" style="width:auto;margin:0;padding:8px 14px;" id="logoutBtn">Logout</button>
+      </div>
+      <div style="margin-top:12px;">License: <span id="licensePill" class="pill grey">—</span> <span class="muted small" id="licenseUntil"></span></div>
+    </div>
+
+    <div class="tabs">
+      <button id="tabBot" class="on">Bot</button>
+      <button id="tabPay">Pay $20</button>
+      <button id="tabTrades">Trades</button>
+      <button id="tabAdmin" class="hidden">Admin</button>
+    </div>
+
+    <!-- BOT TAB -->
+    <div id="paneBot">
+      <div class="card">
+        <h2>Your MT5 account</h2>
+        <p class="sub">Enter the MT5 account you want the bot to trade. The password is stored encrypted on our server. The bot needs your MT5 <b>master (trading)</b> password, not the investor (read-only) password.</p>
+        <div id="acctList"></div>
+        <label>Broker (e.g. Exness)</label>
+        <input id="fBroker" placeholder="Exness">
+        <label>MT5 server (e.g. Exness-MT5Real)</label>
+        <input id="fServer" placeholder="Exness-MT5Real">
+        <label>MT5 login (account number)</label>
+        <input id="fLogin" inputmode="numeric" placeholder="12345678">
+        <label>MT5 password (master password)</label>
+        <input id="fPassword" type="password" placeholder="••••••••">
+        <button id="connectBtn">Connect MT5 account</button>
+        <p class="err hidden" id="mt5Err"></p>
+        <p class="ok hidden" id="mt5Ok"></p>
+      </div>
+    </div>
+
+    <!-- PAY TAB -->
+    <div id="panePay" class="hidden">
+      <div class="card">
+        <h2>Subscribe — <span id="payPrice">$20</span>/month</h2>
+        <p class="sub">Send USDT on the TRON network (TRC20) to the address below, then paste your transaction ID (TXID). We verify it on the blockchain before activating your license — a fake TXID cannot work.</p>
+        <img class="qr" id="qrImg" width="200" height="200" alt="Deposit QR code">
+        <div class="addr center" id="payAddr">—</div>
+        <button class="secondary" id="copyAddrBtn">Copy address</button>
+        <div class="warn">Send <b>only USDT on TRON (TRC20)</b> to this address. Any other coin or network will be lost.</div>
+        <label>Transaction ID (TXID) after you send</label>
+        <input id="fTxid" placeholder="Paste the TXID from your wallet">
+        <button id="verifyBtn">Verify payment &amp; activate</button>
+        <p class="err hidden" id="payErr"></p>
+        <p class="ok hidden" id="payOk"></p>
+      </div>
+      <div class="card">
+        <h2>Payment history</h2>
+        <div id="payList"><p class="muted">No payments yet.</p></div>
+      </div>
+    </div>
+
+    <!-- TRADES TAB -->
+    <div id="paneTrades" class="hidden">
+      <div class="card">
+        <h2>Trade history</h2>
+        <p class="sub">Trades the bot placed on your MT5 account, reported by our server.</p>
+        <div id="tradeList"><p class="muted">No trades yet.</p></div>
+      </div>
+    </div>
+
+    <!-- ADMIN TAB -->
+    <div id="paneAdmin" class="hidden">
+      <div class="card">
+        <h2>Admin — overview</h2>
+        <div id="adminStats" class="muted">Loading…</div>
+      </div>
+      <div class="card">
+        <h2>Customers</h2>
+        <div id="adminCustomers" class="muted">Loading…</div>
+      </div>
+      <div class="card">
+        <h2>Payments</h2>
+        <div id="adminPayments" class="muted">Loading…</div>
+      </div>
+      <div class="card">
+        <h2>Settings</h2>
+        <label>Monthly price (USD)</label>
+        <input id="setPrice" inputmode="decimal">
+        <label>Deposit TRC20 address</label>
+        <input id="setAddr">
+        <button id="saveSettingsBtn">Save settings</button>
+        <p class="err hidden" id="setErr"></p>
+        <p class="ok hidden" id="setOk"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    XAUUSD Bot trades gold (XAU/USD) automatically. Trading involves substantial risk of loss and the bot does not guarantee profits. Never trade with money you cannot afford to lose. Nothing here is financial advice.
+  </footer>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
