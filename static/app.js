@@ -29,18 +29,25 @@ async function refreshPrice() {
   } catch { /* keep last value */ }
 }
 
-/* ---------- live TradingView gold chart (streams on its own) ---------- */
+
 function renderTV() {
   const cfg = {
     symbol: "OANDA:XAUUSD", interval: "15", theme: "dark", style: "1",
     locale: "en", allow_symbol_change: true, hide_side_toolbar: false,
     withdateranges: true, backgroundColor: "rgba(22, 22, 26, 1)",
   };
-  $("tv-container").innerHTML =
-    `<div class="tradingview-widget-container" style="height:100%;width:100%">` +
-    `<div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>` +
-    `<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>` +
-    JSON.stringify(cfg) + `<\/script></div>`;
+  // A <script> injected via innerHTML NEVER executes — that is why the chart
+  // stayed a blank box. Build the widget script with createElement instead.
+  const box = $("tv-container");
+  box.innerHTML =
+      `<div class="tradingview-widget-container" style="height:100%;width:100%">` +
+    `<div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div></div>`;
+  const s = document.createElement("script");
+  s.type = "text/javascript";
+  s.async = true;
+  s.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+  s.textContent = JSON.stringify(cfg);
+  box.firstChild.appendChild(s);
 }
 
 /* ---------- auth / boot ---------- */
