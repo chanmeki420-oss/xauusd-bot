@@ -120,6 +120,12 @@ async def index():
         return f.read()
 
 
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy():
+    with open(os.path.join(STATIC_DIR, "privacy.html"), encoding="utf-8") as f:
+        return f.read()
+
+
 @app.get("/api/health")
 async def health():
     return {"ok": True}
