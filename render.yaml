@@ -1,0 +1,32 @@
+# Render Blueprint — one-click public deploy for the XAUUSD Bot panel.
+# Dashboard flow: Render → New → Blueprint → connect the repo containing
+# this file. The public link will be https://xauusd-bot.onrender.com
+# (or the name Render assigns). See DEPLOY.md for the full steps.
+services:
+  - type: web
+    name: xauusd-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: ENGINE_API_KEY
+        generateValue: true
+      - key: DEPOSIT_TRC20_ADDRESS
+        value: TEKx2jjjq46EM3sQR8bVPZG3fad5Cd9Jfh
+      - key: ADMIN_EMAIL
+        value: sheraz.majeed372@gmail.com
+      - key: PRICE_MONTHLY_USD
+        value: "20"
+      - key: GOOGLE_CLIENT_ID
+        sync: false          # set in dashboard after Google Cloud setup
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false          # set in dashboard after Google Cloud setup
+      - key: APP_BASE_URL
+        sync: false          # set to the Render URL after first deploy
+      - key: TRONGRID_API_KEY
+        sync: false          # optional: higher TronGrid rate limits
